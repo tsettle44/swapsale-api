@@ -26,6 +26,10 @@ client.query(
 app.use(bodyParser.json());
 app.use(cors());
 
+app.get("/", function(req, res) {
+  res.send("Hello World!");
+});
+
 const port = process.env.PORT || 5000;
 
 app.listen(port, () => console.log(`Server started on port ${port}`));
