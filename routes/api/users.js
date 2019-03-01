@@ -23,7 +23,7 @@ router.get("/", (req, res) => {
 
 router.post("/", (req, res) => {
   client.query(
-    "INSERT INTO users VALUES (DEFAULT, 'Tom Settle', 'tsettle44@gmail.com', 3, 'male', '03/24/1997', 'sysdate', 1, 46033)",
+    "INSERT INTO users VALUES (DEFAULT, 'Tom Settle', 'tsettle44@gmail.com', '3175861008', 'male', '03/24/1997', DEFAULT, 1, 46033)",
     (err, result) => {
       if (err) throw err;
       res.send(result.row);
