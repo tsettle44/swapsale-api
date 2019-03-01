@@ -2,33 +2,15 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const { Client } = require("pg");
 require("dotenv").config();
-
-const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: true
-});
-
-client.connect();
 
 //Middleware
 app.use(bodyParser.json());
 app.use(cors());
 
-app.get("/", function(req, res) {
-  res.send("Hello World!");
-  client.query(
-    "SELECT table_schema,table_name FROM information_schema.tables;",
-    (err, res) => {
-      if (err) throw err;
-      for (let row of res.rows) {
-        console.log(JSON.stringify(row));
-      }
-      client.end();
-    }
-  );
-});
+//Users
+const users = require("./routes/api/users");
+app.use("/api/users", users);
 
 const port = process.env.PORT || 5000;
 
