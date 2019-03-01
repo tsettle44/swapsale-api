@@ -10,15 +10,23 @@ const client = new Client({
 client.connect();
 
 router.get("/", (req, res) => {
+  client.query("SELECT * FROM users", (err, rest) => {
+    results = [];
+    if (err) throw err;
+    for (let row of rest.rows) {
+      results.push(JSON.stringify(row));
+    }
+    res.send(results);
+    client.end();
+  });
+});
+
+router.post("/", (req, res) => {
   client.query(
-    "SELECT table_schema,table_name FROM information_schema.tables;",
-    (err, rest) => {
-      results = [];
+    "INSERT INTO users VALUES (DEFAULT, 'Tom Settle', 'tsettle44@gmail.com', 3, 'male', '03/24/1997', 'sysdate', 1, 46033)",
+    (err, result) => {
       if (err) throw err;
-      for (let row of rest.rows) {
-        results.push(JSON.stringify(row));
-      }
-      res.send(results);
+      res.send(result.row);
       client.end();
     }
   );
