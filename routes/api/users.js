@@ -17,19 +17,22 @@ router.get("/", (req, res) => {
       results.push(JSON.stringify(row));
     }
     res.send(results);
-    client.end();
   });
 });
 
 router.post("/", (req, res) => {
-  client.query(
-    "INSERT INTO users VALUES (DEFAULT, 'Tom Settle', 'tsettle44@gmail.com', '3175861008', 'male', '03/24/1997', DEFAULT, 1, 46033)",
-    (err, result) => {
-      if (err) throw err;
-      res.send(result.row);
-      client.end();
-    }
-  );
+  const name = req.body.name;
+  const email = req.body.email;
+  const phone = req.body.phone;
+  const gender = req.body.gender;
+  const bod = req.body.bod;
+  const country = req.body.country;
+  const zipCode = req.body.zipCode;
+  const sql = `INSERT INTO users VALUES (DEFAULT, '${name}', '${email}', '${phone}', '${gender}', '${bod}', DEFAULT, ${country}, ${zipCode})`;
+  client.query(sql, (err, result) => {
+    if (err) throw err;
+    res.status(201).send(`1 row inserted`);
+  });
 });
 
 module.exports = router;
