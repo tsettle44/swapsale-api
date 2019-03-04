@@ -20,7 +20,7 @@ router.get("/", (req, res) => {
   });
 });
 
-router.post("/", (req, res) => {
+router.post("/sign-up", (req, res) => {
   const name = req.body.name;
   const email = req.body.email;
   const password = req.body.password;
@@ -34,6 +34,18 @@ router.post("/", (req, res) => {
     if (err) throw err;
     res.status(201).send(`1 row inserted`);
   });
+});
+
+router.get("/log-in", (req, res) => {
+  client.query(
+    `SELECT * FROM users WHERE email = lower('${
+      req.body.email
+    }') AND password = crypt('${req.body.password}', password)`,
+    (err, result) => {
+      if (err) throw err;
+      res.send(result.rows);
+    }
+  );
 });
 
 module.exports = router;
