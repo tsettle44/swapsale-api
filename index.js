@@ -16,6 +16,10 @@ app.use("/api/users", users);
 const items = require("./routes/api/items");
 app.use("/api/items", items);
 
+//Reviews
+const reviews = require("./routes/api/reviews");
+app.use("/api/reviews", reviews);
+
 const port = process.env.PORT || 5000;
 
 app.listen(port, () => console.log(`Server started on port ${port}`));
