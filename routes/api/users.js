@@ -9,6 +9,7 @@ const client = new Client({
 
 client.connect();
 
+//GET all users
 router.get("/", (req, res) => {
   client.query("SELECT * FROM users", (err, rest) => {
     results = [];
@@ -20,6 +21,7 @@ router.get("/", (req, res) => {
   });
 });
 
+//POST user sign-up
 router.post("/sign-up", (req, res) => {
   const name = req.body.name;
   const email = req.body.email;
@@ -36,6 +38,7 @@ router.post("/sign-up", (req, res) => {
   });
 });
 
+//GET user login
 router.get("/log-in", (req, res) => {
   client.query(
     `SELECT * FROM users WHERE email = lower('${
