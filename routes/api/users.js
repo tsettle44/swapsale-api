@@ -23,12 +23,13 @@ router.get("/", (req, res) => {
 router.post("/", (req, res) => {
   const name = req.body.name;
   const email = req.body.email;
+  const password = req.body.password;
   const phone = req.body.phone;
   const gender = req.body.gender;
   const bod = req.body.bod;
   const country = req.body.country;
   const zipCode = req.body.zipCode;
-  const sql = `INSERT INTO users VALUES (DEFAULT, '${name}', '${email}', '${phone}', '${gender}', '${bod}', DEFAULT, ${country}, ${zipCode})`;
+  const sql = `INSERT INTO users VALUES (DEFAULT, '${name}', '${email}', crypt('${password}', gen_salt('bf', 8)), ${phone}, '${gender}', '${bod}', DEFAULT, ${country}, ${zipCode})`;
   client.query(sql, (err, result) => {
     if (err) throw err;
     res.status(201).send(`1 row inserted`);
