@@ -15,7 +15,7 @@ router.get("/", (req, res) => {
     results = [];
     if (err) throw err;
     for (let row of rest.rows) {
-      results.push(JSON.stringify(row));
+      results.push(row);
     }
     res.send(results);
   });
