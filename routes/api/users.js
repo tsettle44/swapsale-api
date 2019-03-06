@@ -1,7 +1,8 @@
 const express = require("express");
+const app = express();
 const { Client } = require("pg");
-const router = express.Router();
 const session = require("express-session");
+const uuidv4 = require("uuid/v4");
 
 const client = new Client({
   connectionString: process.env.DATABASE_URL,
@@ -12,9 +13,6 @@ client.connect();
 
 app.use(
   session({
-    genid: function(req) {
-      return genuuid(); // use UUIDs for session IDs
-    },
     secret: "swapsale",
     resave: false,
     saveUninitialized: false,
@@ -25,14 +23,14 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  if (req.cookies.genid && !req.session.user) {
-    res.clearCookie(req.session.genid);
+  if (req.session.cookie.id && !req.session.user) {
+    res.clearCookie(req.session.user);
   }
   next();
 });
 
 const sessionChecker = (req, res, next) => {
-  if (req.session.user && req.cookies.genid) {
+  if (req.session.user && req.session.cookie.id) {
     res.redirect("/login");
   } else {
     next();
@@ -41,8 +39,8 @@ const sessionChecker = (req, res, next) => {
 
 // route for user logout
 app.get("/logout", (req, res) => {
-  if (req.session.user && req.cookies.genid) {
-    res.clearCookie(req.session.genid);
+  if (req.session.user && req.session.cookie.id) {
+    res.clearCookie(req.session.user);
     res.redirect("/");
   } else {
     res.redirect("/login");
@@ -50,7 +48,7 @@ app.get("/logout", (req, res) => {
 });
 
 //GET all users
-router.get("/", (req, res) => {
+app.get("/", (req, res) => {
   client.query("SELECT * FROM users", (err, rest) => {
     results = [];
     if (err) throw err;
@@ -62,35 +60,28 @@ router.get("/", (req, res) => {
 });
 
 //POST user sign-up
-router.post("/sign-up", (req, res) => {
-  const {
-    name,
-    email,
-    password,
-    phone,
-    gender,
-    bod,
-    country,
-    zipCode
-  } = req.body;
-  const sql = `INSERT INTO users VALUES (DEFAULT, '${name}', '${email}', crypt('${password}', gen_salt('bf', 8)), ${phone}, '${gender}', '${bod}', DEFAULT, ${country}, ${zipCode})`;
+app.post("/sign-up", (req, res) => {
+  const { name, email, password, phone, zipCode } = req.body;
+  const sql = `INSERT INTO users VALUES (DEFAULT, '${name}', '${email}', crypt('${password}', gen_salt('bf', 8)), ${phone}, DEFAULT, ${zipCode})`;
   client.query(sql, (err, result) => {
     if (err) throw err;
+    req.session.user = uuidv4();
     res.status(201).send(`1 row inserted`);
   });
 });
 
 //GET user login
-router.get("/log-in", (req, res) => {
+app.get("/log-in", (req, res) => {
   client.query(
     `SELECT * FROM users WHERE email = lower('${
       req.body.email
     }') AND password = crypt('${req.body.password}', password)`,
     (err, result) => {
       if (err) throw err;
+      req.session.user = uuidv4();
       res.send(result.rows);
     }
   );
 });
 
-module.exports = router;
+module.exports = app;
