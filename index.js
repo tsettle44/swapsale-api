@@ -3,6 +3,19 @@ const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors");
 require("dotenv").config();
+const pg = require("pg");
+pg.defaults.ssl = true;
+const Sequelize = require("sequelize");
+const sequelize = new Sequelize(process.env.DATABASE_URL);
+
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log("Connection has been established successfully.");
+  })
+  .catch(err => {
+    console.error("Unable to connect to the database:", err);
+  });
 
 //Middleware
 app.use(bodyParser.json());

@@ -1,15 +1,8 @@
 const express = require("express");
 const app = express();
-const { Client } = require("pg");
 const session = require("express-session");
 const uuidv4 = require("uuid/v4");
-
-const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: true
-});
-
-client.connect();
+const User = require("../models/user").User;
 
 app.use(
   session({
@@ -60,15 +53,33 @@ app.get("/", (req, res) => {
 });
 
 //POST user sign-up
-app.post("/sign-up", (req, res) => {
-  const { name, email, password, phone, zipCode } = req.body;
-  const sql = `INSERT INTO users VALUES (DEFAULT, '${name}', '${email}', crypt('${password}', gen_salt('bf', 8)), ${phone}, DEFAULT, ${zipCode})`;
-  client.query(sql, (err, result) => {
-    if (err) throw err;
-    req.session.user = uuidv4();
-    res.status(201).send(`1 row inserted`);
-  });
+app.post("/api/users/signup", (req, res) => {
+  User.create({
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    email: req.body.email,
+    password: req.body.password,
+    phone: req.body.phone,
+    zipCode: req.body.zipCode
+  })
+    .then(user => {
+      req.session.user = uuidv4();
+      res.redirect("/");
+    })
+    .catch(error => {
+      res.redirect("/signup");
+    });
 });
+
+// app.post("/sign-up", (req, res) => {
+//   const { name, email, password, phone, zipCode } = req.body;
+//   const sql = `INSERT INTO users VALUES (DEFAULT, '${name}', '${email}', crypt('${password}', gen_salt('bf', 8)), ${phone}, DEFAULT, ${zipCode})`;
+//   client.query(sql, (err, result) => {
+//     if (err) throw err;
+//     req.session.user = uuidv4();
+//     res.status(201).send(`1 row inserted`);
+//   });
+// });
 
 //GET user login
 app.get("/log-in", (req, res) => {
