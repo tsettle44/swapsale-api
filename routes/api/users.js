@@ -53,22 +53,20 @@ app.get("/", (req, res) => {
 });
 
 //POST user sign-up
-app.post("/api/users/signup", (req, res) => {
-  User.create({
+app.post("/signup", (req, res) => {
+  var newUser = new User({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
     password: req.body.password,
     phone: req.body.phone,
     zipCode: req.body.zipCode
-  })
-    .then(user => {
-      req.session.user = uuidv4();
-      res.redirect("/");
-    })
-    .catch(error => {
-      res.redirect("/signup");
-    });
+  });
+
+  newUser.save(err => {
+    if (err) throw err;
+    res.send("New User Created!");
+  });
 });
 
 // app.post("/sign-up", (req, res) => {

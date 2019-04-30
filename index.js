@@ -21,8 +21,8 @@ app.use(bodyParser.json());
 app.use(cors());
 
 //Users
-// const users = require("./routes/api/users");
-// app.use("/api/users", users);
+const users = require("./routes/api/users");
+app.use("/api/users", users);
 
 // //Items
 // const items = require("./routes/api/items");
