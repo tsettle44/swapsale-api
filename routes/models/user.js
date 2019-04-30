@@ -1,35 +1,14 @@
-const Sequelize = require("sequelize");
-const sequelize = new Sequelize(process.env.DATABASE_URL);
+const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
-const User = sequelize.define(
-  "user",
+const UserSchema = new mongoose.Schema(
   {
-    firstName: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    lastName: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    email: {
-      type: Sequelize.STRING,
-      unique: true,
-      allowNull: false
-    },
-    password: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    phone: {
-      type: Sequelize.INTEGER,
-      allowNull: false
-    },
-    zipCode: {
-      type: Sequelize.INTEGER,
-      allowNull: false
-    }
+    firstName: "string",
+    lastName: "string",
+    email: "string",
+    password: "string",
+    phone: "number",
+    zipCode: "number"
   },
   {
     hooks: {
