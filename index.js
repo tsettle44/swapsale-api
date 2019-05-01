@@ -32,6 +32,17 @@ app.use("/api/users", users);
 // const reviews = require("./routes/api/reviews");
 // app.use("/api/reviews", reviews);
 
+// error handler
+// define as the last app.use callback
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.render("error", {
+    title: "Error",
+    message: err.message,
+    error: {}
+  });
+});
+
 const port = process.env.PORT || 5000;
 
 app.listen(port, () => console.log(`Server started on port ${port}`));

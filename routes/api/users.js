@@ -65,32 +65,28 @@ app.post("/signup", (req, res) => {
 
   newUser.save(err => {
     if (err) throw err;
-    res.send("New User Created!");
+    res.status(201).send();
   });
 });
 
-// app.post("/sign-up", (req, res) => {
-//   const { name, email, password, phone, zipCode } = req.body;
-//   const sql = `INSERT INTO users VALUES (DEFAULT, '${name}', '${email}', crypt('${password}', gen_salt('bf', 8)), ${phone}, DEFAULT, ${zipCode})`;
-//   client.query(sql, (err, result) => {
-//     if (err) throw err;
-//     req.session.user = uuidv4();
-//     res.status(201).send(`1 row inserted`);
-//   });
-// });
-
 //GET user login
-app.get("/log-in", (req, res) => {
-  client.query(
-    `SELECT * FROM users WHERE email = lower('${
-      req.body.email
-    }') AND password = crypt('${req.body.password}', password)`,
-    (err, result) => {
-      if (err) throw err;
-      req.session.user = uuidv4();
-      res.send(result.rows);
-    }
-  );
+app.post("/login", (req, res, next) => {
+  if (req.body.email && req.body.password) {
+    User.authenticate(req.body.email, req.body.password, function(error, user) {
+      if (error || !user) {
+        var err = new Error("Wrong email or password");
+        err.status = 401;
+        res.send(err);
+      } else {
+        req.session.userId = user._id;
+        res.status(200).send();
+      }
+    });
+  } else {
+    var err = new Error("Email and password are required");
+    err.status = 401;
+    res.send(err);
+  }
 });
 
 module.exports = app;
