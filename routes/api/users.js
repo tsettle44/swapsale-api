@@ -1,56 +1,6 @@
 const express = require("express");
 const app = express();
-const session = require("express-session");
-const uuidv4 = require("uuid/v4");
 const User = require("../models/user").User;
-
-app.use(
-  session({
-    secret: "swapsale",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      expires: 600000
-    }
-  })
-);
-
-app.use((req, res, next) => {
-  if (req.session.cookie.id && !req.session.user) {
-    res.clearCookie(req.session.user);
-  }
-  next();
-});
-
-const sessionChecker = (req, res, next) => {
-  if (req.session.user && req.session.cookie.id) {
-    res.redirect("/login");
-  } else {
-    next();
-  }
-};
-
-// route for user logout
-app.get("/logout", (req, res) => {
-  if (req.session.user && req.session.cookie.id) {
-    res.clearCookie(req.session.user);
-    res.redirect("/");
-  } else {
-    res.redirect("/login");
-  }
-});
-
-//GET all users
-app.get("/", (req, res) => {
-  client.query("SELECT * FROM users", (err, rest) => {
-    results = [];
-    if (err) throw err;
-    for (let row of rest.rows) {
-      results.push(row);
-    }
-    res.send(results);
-  });
-});
 
 //POST user sign-up
 app.post("/signup", (req, res) => {
@@ -63,9 +13,9 @@ app.post("/signup", (req, res) => {
     zipCode: req.body.zipCode
   });
 
-  newUser.save(err => {
+  newUser.save((err, user) => {
     if (err) throw err;
-    res.status(201).send();
+    res.status(201).send(user._id);
   });
 });
 
@@ -78,8 +28,7 @@ app.post("/login", (req, res, next) => {
         err.status = 401;
         res.send(err);
       } else {
-        req.session.userId = user._id;
-        res.status(200).send();
+        res.send(user._id);
       }
     });
   } else {
