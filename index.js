@@ -24,9 +24,9 @@ app.use(cors());
 const users = require("./routes/api/users");
 app.use("/api/users", users);
 
-// //Items
-// const items = require("./routes/api/items");
-// app.use("/api/items", items);
+//Items
+const items = require("./routes/api/items");
+app.use("/api/items", items);
 
 // //Reviews
 // const reviews = require("./routes/api/reviews");

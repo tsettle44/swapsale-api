@@ -1,13 +1,7 @@
 const express = require("express");
-const { Client } = require("pg");
 const router = express.Router();
-
-const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: true
-});
-
-client.connect();
+const Item = require("../models/item").Item;
+const User = require("../models/user").User;
 
 //GET all items
 router.get("/", (req, res) => {
@@ -23,16 +17,28 @@ router.get("/", (req, res) => {
 
 //POST new item
 router.post("/", (req, res) => {
-  const name = req.body.name;
-  const userId = req.body.userId;
-  const price = req.body.price;
-  const description = req.body.desc;
-  const status = req.body.status;
-  const zipcode = req.body.zipcode;
-  const sql = `INSERT INTO items VALUES(DEFAULT, '${name}', '${userId}', ${price}, '${description}', '${status}', DEFAULT, '${zipcode}')`;
-  client.query(sql, (err, result) => {
+  const newItem = new Item({
+    name: req.body.name,
+    userId: req.body.userId,
+    price: req.body.price,
+    description: req.body.desc,
+    status: req.body.status,
+    zipCode: req.body.zipCode
+  });
+
+  Item.create(newItem, (err, item) => {
     if (err) throw err;
-    res.status(201).send(`1 row inserted`);
+    User.findOne({ _id: req.body.userId }, (err, user) => {
+      if (err) throw err;
+      updatedUser = user.toObject();
+      console.log(updatedUser.items);
+      updatedUser.items.push(item);
+
+      User.updateOne({ _id: req.body.userId }, updatedUser, (err, user) => {
+        if (err) throw err;
+        res.status(204).send();
+      });
+    });
   });
 });
 

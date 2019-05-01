@@ -8,6 +8,8 @@ const UserSchema = new mongoose.Schema({
   password: String,
   phone: Number,
   zipCode: Number,
+  items: [],
+  reviews: [],
   createdAt: {
     type: Date,
     default: Date.now
@@ -15,8 +17,8 @@ const UserSchema = new mongoose.Schema({
 });
 
 //Authenticate
-UserSchema.statics.authenticate = function(email, password, callback) {
-  User.findOne({ email: email }).exec(function(error, user) {
+UserSchema.statics.authenticate = (email, password, callback) => {
+  User.findOne({ email: email }).exec((error, user) => {
     if (error) {
       return callback(error);
     } else if (!user) {

@@ -4,7 +4,7 @@ const User = require("../models/user").User;
 
 //POST user sign-up
 app.post("/signup", (req, res) => {
-  var newUser = new User({
+  const newUser = new User({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
