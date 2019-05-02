@@ -5,13 +5,22 @@ const User = require("../models/user").User;
 
 //GET all items
 router.get("/", (req, res) => {
-  client.query("SELECT * FROM items", (err, rest) => {
-    results = [];
+  Item.find({}, (err, item) => {
     if (err) throw err;
-    for (let row of rest.rows) {
-      results.push(row);
-    }
-    res.send(results);
+    const items = [];
+
+    item.forEach(i => {
+      items.unshift(i);
+    });
+
+    res.send(items);
+  });
+});
+
+router.get("/:id", (req, res) => {
+  Item.find({ _id: req.params.id }, (err, item) => {
+    if (err) throw err;
+    res.send(item);
   });
 });
 
@@ -31,7 +40,6 @@ router.post("/", (req, res) => {
     User.findOne({ _id: req.body.userId }, (err, user) => {
       if (err) throw err;
       updatedUser = user.toObject();
-      console.log(updatedUser.items);
       updatedUser.items.push(item);
 
       User.updateOne({ _id: req.body.userId }, updatedUser, (err, user) => {

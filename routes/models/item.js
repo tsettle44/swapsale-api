@@ -5,7 +5,6 @@ const ItemSchema = new mongoose.Schema({
   userId: String,
   price: Number,
   description: String,
-  status: String,
   zipCode: Number,
   createdAt: {
     type: Date,
