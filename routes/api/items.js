@@ -17,10 +17,25 @@ router.get("/", (req, res) => {
   });
 });
 
+//GET specific item
 router.get("/:id", (req, res) => {
   Item.find({ _id: req.params.id }, (err, item) => {
     if (err) throw err;
     res.send(item);
+  });
+});
+
+//GET searched items
+router.get("/search/:value", (req, res) => {
+  Item.find({ name: req.params.value }, (err, item) => {
+    if (err) throw err;
+    const items = [];
+
+    item.forEach(i => {
+      items.unshift(i);
+    });
+
+    res.send(items);
   });
 });
 
