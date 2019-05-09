@@ -12,8 +12,10 @@ mongoose.connect(process.env.DATABASE_URL, {
   useNewUrlParser: true
 });
 
+let gfs;
+
 conn.once("open", () => {
-  const gfs = Grid(conn.db, mongoose.mongo);
+  gfs = Grid(conn.db, mongoose.mongo);
   gfs.collection("images");
   console.log("Connection Successful Boi");
 });
