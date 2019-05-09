@@ -2,6 +2,14 @@ const express = require("express");
 const app = express();
 const User = require("../models/user").User;
 
+//GET User Profile
+app.get("/:id", (req, res) => {
+  User.findOne({ _id: req.params.id }, (err, user) => {
+    if (err) throw err;
+    res.send(user);
+  });
+});
+
 //POST user sign-up
 app.post("/signup", (req, res) => {
   const newUser = new User({
@@ -19,7 +27,7 @@ app.post("/signup", (req, res) => {
   });
 });
 
-//GET user login
+//POST user login
 app.post("/login", (req, res, next) => {
   if (req.body.email && req.body.password) {
     User.authenticate(req.body.email, req.body.password, function(error, user) {

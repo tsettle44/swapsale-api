@@ -4,17 +4,19 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 require("dotenv").config();
 const mongoose = require("mongoose");
+const Grid = require("gridfs-stream");
 
-mongoose.connect(
-  process.env.DATABASE_URL,
-  {
-    useNewUrlParser: true
-  },
-  err => {
-    if (err) throw err;
-    console.log("Connection Successful Boi");
-  }
-);
+const conn = mongoose.createConnection(process.env.DATABASE_URL);
+
+mongoose.connect(process.env.DATABASE_URL, {
+  useNewUrlParser: true
+});
+
+conn.once("open", () => {
+  const gfs = Grid(conn.db, mongoose.mongo);
+  gfs.collection("images");
+  console.log("Connection Successful Boi");
+});
 
 //Middleware
 app.use(bodyParser.json());

@@ -1,5 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const path = require("path");
+const crypto = require("crypto");
+const GridFsStorage = require("multer-gridfs-storage");
+const multer = require("multer");
 const Item = require("../models/item").Item;
 const User = require("../models/user").User;
 
@@ -39,9 +43,32 @@ router.get("/search/:value", (req, res) => {
   });
 });
 
+//Create Storage engine
+const storage = new GridFsStorage({
+  url: process.env.DATABASE_URL,
+  file: (req, file) => {
+    return new Promise((resolve, reject) => {
+      crypto.randomBytes(16, (err, buf) => {
+        if (err) {
+          return reject(err);
+        }
+        const filename = buf.toString("hex") + path.extname(file.originalname);
+        const fileInfo = {
+          filename: filename,
+          bucketName: "images"
+        };
+        resolve(fileInfo);
+      });
+    });
+  }
+});
+
+const upload = multer({ storage });
+
 //POST new item
-router.post("/", (req, res) => {
+router.post("/", upload.single("img"), (req, res) => {
   const newItem = new Item({
+    img: req.file.id,
     name: req.body.name,
     userId: req.body.userId,
     price: req.body.price,
