@@ -81,9 +81,9 @@ const storage = new GridFsStorage({
 const upload = multer({ storage });
 
 //POST new item
-router.post("/", upload.single("img"), (req, res) => {
+router.post("/", upload.array("img", 12), (req, res) => {
   const newItem = new Item({
-    img: req.file.filename,
+    img: req.files,
     name: req.body.name,
     userId: req.body.userId,
     price: req.body.price,
